@@ -3,7 +3,7 @@
 #import haohaninfo
 from order_Lo8 import Record
 import numpy as np
-from talib.abstract import SMA,EMA, WMA, RSI, BBANDS, MACD, STOCH
+#from talib.abstract import SMA,EMA, WMA, RSI, BBANDS, MACD, STOCH
 #import sys
 import datetime, indicator
 #import indicator_f_Lo2,datetime, indicator
