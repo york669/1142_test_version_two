@@ -966,44 +966,51 @@ OrderRecord.GeneratorProfit_rateChart(StrategyName='MA')
 # ==========================================
 import google.generativeai as genai
 
-st.markdown("---") # 畫一條分隔線
+st.markdown("---")
 st.subheader("🤖 生成式 AI 理財機器人：策略與風險診斷")
-st.write("利用大語言模型，針對您選擇的標的與技術指標進行深度風險診斷。")
+st.write("利用大語言模型，針對您設定的參數進行深度風險診斷。")
 
-# 1. 密碼輸入框：讓使用者在網頁上輸入剛剛申請的 API Key
+# 1. 密碼輸入框
 api_key_input = st.text_input("請輸入您的 Gemini API Key 來啟動機器人：", type="password")
 
 if api_key_input:
-    # 2. 驗證金鑰並載入 Gemini 模型
     genai.configure(api_key=api_key_input)
-    model = genai.GenerativeModel('gemini-1.5-flash') 
     
-    # 3. 設定一個點擊按鈕，按下去才會觸發 AI
-    if st.button("✨ 點擊生成 AI 策略診斷報告"):
+    # 🌟 終極必殺技：讓程式自動向 Google 獲取「可使用的模型清單」
+    try:
+        available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         
-        # 畫面上會出現「轉圈圈」的等待提示
-        with st.spinner("AI 正在深度分析您的回測數據與市場特性..."):
+        if not available_models:
+            st.error("您的 API Key 似乎無法存取任何生成模型，請確認 Google AI Studio 的權限設定。")
+        else:
+            # 自動選用清單中的第一個可用模型
+            target_model = available_models[0]
+            model = genai.GenerativeModel(target_model)
             
-            # 4. 設計動態 Prompt (提示詞)
-            # 這裡的 {choice} 會自動抓取你在網頁最上方下拉選單選擇的商品（如台積電或大台指）
-            prompt = f"""
-            你現在是一位華爾街頂級的量化交易員與風險控管專家，特別擅長處理比特幣 (BTC)、以太坊 (ETH)、黃金 (XAU/USD)、原油等大宗商品的高槓桿（如 100x）極端波動市場策略。
-            
-            我剛剛在我的 Python 金融看板上，針對【{choice}】完成了移動平均線 (MA) 與相關技術指標的策略設定。
-            
-            請根據你對高波動市場的敏銳度，給我一段約 300 字的專業分析報告：
-            1. 評估使用傳統 MA 雙均線交叉策略時，有哪些常見的優缺點（如盤整期的雙面挨巴掌問題）？
-            2. 如果未來我要將此模型應用在高槓桿的期貨或商品上，在「資金控管 (部位大小)」與「停損機制的動態調整」上，你會給我什麼具體且具建設性的建議？
-            語氣要專業、犀利且直擊痛點。
-            """
-            
-            # 5. 呼叫 AI 並將結果印在網頁上
-            try:
-                response = model.generate_content(prompt)
-                st.success("分析完成！以下是 AI 理財機器人的專屬診斷：")
-                st.info(response.text) # 用帶有顏色的資訊框顯示 AI 的文字
-            except Exception as e:
-                st.error(f"呼叫 AI 發生錯誤，請檢查您的 API Key 是否正確。錯誤代碼：{e}")
+            # 3. 執行分析的按鈕
+            if st.button("✨ 點擊生成 AI 策略診斷報告"):
+                with st.spinner(f"正在呼叫 {target_model} 進行深度分析中..."):
+                    
+                    prompt = f"""
+                    你現在是一位華爾街頂級的量化交易員與風險控管專家，特別擅長處理大宗商品的高槓桿極端波動市場策略。
+                    
+                    我剛剛在我的 Python 金融看板上，針對【目前的金融商品】完成了移動平均線 (MA) 交叉策略設定。
+                    
+                    請根據你對高波動市場的敏銳度，給我一段約 300 字的專業分析報告：
+                    1. 評估使用傳統 MA 雙均線交叉策略時，有哪些常見的優缺點（如盤整期問題）？
+                    2. 如果未來我要將此模型應用在高槓桿期貨上，在「資金控管」與「動態停損」上，你會給我什麼具體建議？
+                    語氣要專業、犀利且直擊痛點。
+                    """
+                    
+                    try:
+                        response = model.generate_content(prompt)
+                        st.success("分析完成！以下是 AI 理財機器人的專屬診斷：")
+                        st.info(response.text)
+                    except Exception as e:
+                        st.error(f"呼叫 AI 發生錯誤。錯誤代碼：{e}")
+                        
+    except Exception as list_error:
+        st.error(f"無法獲取模型清單，請確認 API Key 是否輸入正確。錯誤代碼：{list_error}")
 #%%
 ####### (7) 呈現即時資料 #######
 
