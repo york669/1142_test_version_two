@@ -10,7 +10,7 @@ import os
 #import haohaninfo
 #from order_Lo8 import Record
 import numpy as np
-from talib.abstract import SMA,EMA, WMA, RSI, BBANDS, MACD
+#from talib.abstract import SMA,EMA, WMA, RSI, BBANDS, MACD
 #import sys
 import indicator_f_Lo2_short,datetime, indicator_forKBar_short
 import pandas as pd
@@ -961,6 +961,49 @@ OrderRecord.GeneratorProfit_rateChart(StrategyName='MA')
 # st.pyplot(plt)
 
 
+# ==========================================
+# 🚀 專題加分區：生成式 AI 理財機器人
+# ==========================================
+import google.generativeai as genai
+
+st.markdown("---") # 畫一條分隔線
+st.subheader("🤖 生成式 AI 理財機器人：策略與風險診斷")
+st.write("利用大語言模型，針對您選擇的標的與技術指標進行深度風險診斷。")
+
+# 1. 密碼輸入框：讓使用者在網頁上輸入剛剛申請的 API Key
+api_key_input = st.text_input("請輸入您的 Gemini API Key 來啟動機器人：", type="password")
+
+if api_key_input:
+    # 2. 驗證金鑰並載入 Gemini 模型
+    genai.configure(api_key=api_key_input)
+    model = genai.GenerativeModel('gemini-1.5-flash') 
+    
+    # 3. 設定一個點擊按鈕，按下去才會觸發 AI
+    if st.button("✨ 點擊生成 AI 策略診斷報告"):
+        
+        # 畫面上會出現「轉圈圈」的等待提示
+        with st.spinner("AI 正在深度分析您的回測數據與市場特性..."):
+            
+            # 4. 設計動態 Prompt (提示詞)
+            # 這裡的 {choice} 會自動抓取你在網頁最上方下拉選單選擇的商品（如台積電或大台指）
+            prompt = f"""
+            你現在是一位華爾街頂級的量化交易員與風險控管專家，特別擅長處理比特幣 (BTC)、以太坊 (ETH)、黃金 (XAU/USD)、原油等大宗商品的高槓桿（如 100x）極端波動市場策略。
+            
+            我剛剛在我的 Python 金融看板上，針對【{choice}】完成了移動平均線 (MA) 與相關技術指標的策略設定。
+            
+            請根據你對高波動市場的敏銳度，給我一段約 300 字的專業分析報告：
+            1. 評估使用傳統 MA 雙均線交叉策略時，有哪些常見的優缺點（如盤整期的雙面挨巴掌問題）？
+            2. 如果未來我要將此模型應用在高槓桿的期貨或商品上，在「資金控管 (部位大小)」與「停損機制的動態調整」上，你會給我什麼具體且具建設性的建議？
+            語氣要專業、犀利且直擊痛點。
+            """
+            
+            # 5. 呼叫 AI 並將結果印在網頁上
+            try:
+                response = model.generate_content(prompt)
+                st.success("分析完成！以下是 AI 理財機器人的專屬診斷：")
+                st.info(response.text) # 用帶有顏色的資訊框顯示 AI 的文字
+            except Exception as e:
+                st.error(f"呼叫 AI 發生錯誤，請檢查您的 API Key 是否正確。錯誤代碼：{e}")
 #%%
 ####### (7) 呈現即時資料 #######
 
