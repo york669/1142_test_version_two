@@ -2,7 +2,7 @@
 import requests,datetime,os,time
 import numpy as np
 import matplotlib.dates as mdates
-from talib.abstract import *  # 載入技術指標函數
+#from talib.abstract import *  # 載入技術指標函數
 
     
 # 算K棒
